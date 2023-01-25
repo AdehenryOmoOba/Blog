@@ -1,0 +1,15 @@
+{
+    "posts" : [
+        {
+            "id" : "1",
+            "postImg" : "https://www.img.com",
+            "title" : "How to deploy a React project to a free web host server",
+            "content" : "Once you've successfully built and tested your React app, the final step is hosting and deploying it on a server. This makes your React app public, allowing other users to see your app using a URL. There are numerous hosting and deployment, successfully built and tested your React app, the final step is hosting and deploying it on a server",
+            "tags" : ["JavaScript", "ReactJS", "WebDev"],
+            "authorId" : "6545-5658-7892",
+            "authorImg" : "https://www.img.com",
+            "authorName" : "Henry A.",
+            "postedAt" : "Jan 12 2023"
+        }
+    ]
+}
