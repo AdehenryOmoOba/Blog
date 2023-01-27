@@ -42,6 +42,7 @@ function Header() {
         <nav>
          <Link to='/'>Home</Link>
          <Link to='/latest'>Latest</Link>
+         {currentUser && <Link to='/profile'>Profile</Link>}
          {currentUser ? <button onClick={handleLogout}>Logout</button> : <Link to='/login'>Login</Link>}
         </nav>
          {currentUser && <img src={author} alt='user-Image' style={imgStyles}></img>}

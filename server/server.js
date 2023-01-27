@@ -1,26 +1,24 @@
-
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const db = require('./db.json')
 const cors = require('cors')
 const session = require('express-session')
-const dotenv = require('dotenv')
-
-dotenv.config()
+const mongoose = require('mongoose')
+const UserModel = require('./userModel')
 
 const corsOptions = {
     origin: "http://localhost:5173",
     credentials: true,
 }
 
-app.use(session({secret: process.env.SESSION_SECRETE, resave: false, saveUninitialized: false, cookie: {maxAge: 1000 * 30}}))
+app.use(session({secret: process.env.SESSION_SECRETE, resave: false, saveUninitialized: false, cookie: {maxAge: 1000 * 60 * 60}}))
 app.use(cors(corsOptions))
 app.use(express.json())
 
 const secreteInfo = {
-  developer : "Adehenry",
-  channelName : "codeNovella",
-  logo : "Adeh-Code"
+  channelName: 'codeNovella',
+  developer: 'Adehenry'
 }
 
 app.get('/blog-api', (req, res) => {
@@ -55,8 +53,32 @@ app.get('/blog-api/logout', (req, res) => {
   res.sendStatus(200)
 })
 
+app.post('/blog-api/register', async (req, res) => {
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}...`)
+  console.log({fromClient: req.body})
+
+  const  newUserObj = {
+     name: 'Ade Bobo',
+     username: 'adebobo',
+     email: 'adebobo@gmail.com',
+     password: 'pass123',
+     phone: '08012345678',
+     profilePicURL: 'https://www.images.com', 
+  }
+
+  const newUser = await new UserModel(newUserObj).save()
+  console.log({newUser})
+  
+  res.status(200).json(newUser)
+
 })
+
+
+const connectionStr = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.up9zn.mongodb.net/adeh-blog_DB`
+const PORT = process.env.PORT || 5000
+
+mongoose.connect(connectionStr, () => {
+  console.log('Connected to adeh-blog_DB Database successfuly...')
+  app.listen(PORT, () => console.log(`Server is listening on port ${PORT}...`))
+})
+
