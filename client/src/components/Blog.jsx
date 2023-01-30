@@ -32,8 +32,8 @@ function Blog({blog}) {
      </div>
      <div className="author">
        <div className="author-info">
-        <img src={blog?.profilePicURL} alt="author" />
-        <p className="name">{blog?.name}</p>
+        <img src={blog?.authorInfo[0].profilePicURL} alt="author" />
+        <p className="name">{blog?.authorInfo[0].name}</p>
        </div>
        <span>|</span>
        <div className="posted-at">

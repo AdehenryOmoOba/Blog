@@ -1,7 +1,6 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const db = require('./db.json')
 const cors = require('cors')
 const session = require('express-session')
 const mongoose = require('mongoose')
@@ -25,21 +24,11 @@ const secreteInfo = {
 
 app.get('/blog-api', async (req, res) => {
 
-  let result = await Promise.all([BlogModel.find(), UserModel.find({}, {name: 1, profilePicURL: 1})])
+  let blogs = await BlogModel.aggregate([
+     {$lookup: {from: "users", localField: "authorId", foreignField: "_id", as: "authorInfo"}},
+     {$project: {postImg: 1, title: 1, content: 1, tags: 1, postedAt: 1, updatedAt: 1, "authorInfo.name": 1, "authorInfo.profilePicURL": 1}}
+    ])
 
-  let authorsMap = {}
-
-  for (let author of result[1]) {
-    const {name, profilePicURL = ""} = author
-    authorsMap[author._id] =  {name, profilePicURL}
-  }
-
-  const blogs = result[0].map((blog) => {
-    const {_id, postImg, title, content, tags, authorId, postedAt} = blog
-    return {_id, postImg, title, content, tags, authorId, postedAt, ...authorsMap[blog.authorId]}
-  })
-
-  
   res.status(200).json({blogs})
 })
 
@@ -104,7 +93,11 @@ const connectionStr = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB
 const PORT = process.env.PORT || 5000
 
 mongoose.set('strictQuery', true)
-mongoose.connect(connectionStr, () => {
+mongoose.connect(connectionStr, (error) => {
+  if(error) {
+    console.log(error.message)
+    return
+  }
   console.log('Connected to adeh-blog_DB Database successfuly...')
   app.listen(PORT, () => console.log(`Server is listening on port ${PORT}...`))
 })

@@ -6,7 +6,7 @@ const blogSchema = new mongoose.Schema({
     title: {type: String, required: true},
     content: {type: String, required: true},
     tags: {type: [String], required: true},
-    authorId: String,
+    authorId: mongoose.ObjectId,
     postedAt: {type: String, default: Date.now},
     updatedAt: {type: String}
 })
