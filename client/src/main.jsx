@@ -5,16 +5,20 @@ import './index.css'
 import {BrowserRouter} from 'react-router-dom'
 import ThemeProvider from './context/ThemeContext'
 import UserProvider from './context/UserContext'
+import BlogsContextProvider from './context/BlogsContext'
+
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-     <ThemeProvider>
-      <UserProvider>
+     <BlogsContextProvider>
+      <ThemeProvider>
+       <UserProvider>
           <App />
-      </UserProvider>
-     </ThemeProvider>
+       </UserProvider>
+      </ThemeProvider>
+     </BlogsContextProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )

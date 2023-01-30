@@ -31,7 +31,7 @@ function Header() {
   }
 
   return (
-    <header>
+    <header style={{zIndex: '10'}}>
       <div className="contain" style={{display: 'flex', alignItems:'center', justifyContent:'space-between', color:'inherit'}}>
         <div className="logo-container" style={{display: 'flex', alignItems:'center'}}>
          <div className='logo' style={{ height:'10rem', width:'10rem',  display:'flex', justifyContent:'flex-end', marginLeft: '-3.5rem',}}>

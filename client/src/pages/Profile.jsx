@@ -9,13 +9,20 @@ const pageStyles = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    height: "50vh"
+    minHeight: '100vh',
 }
-const ppDivStyles = {
-    height: '15rem',
-    width: '15rem',
-    borderRadius: '10rem',
-    marginBottom: '2rem'
+const infoStyle = {
+  height: '25rem',
+  width: '100%',
+  display: 'flex',
+  backgroundColor: '#ffffff',
+  borderRadius: '1rem',
+  padding: '2rem',
+  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px'
+}
+const infoChildStyle = {
+  height: '100%',
+  width: '50%'
 }
 const ppStyles = {
     height: '100%',
@@ -23,20 +30,27 @@ const ppStyles = {
     objectFit: "cover",
     borderRadius: '10rem'
 }
-const selectPPBtnStyles = {
+const uploadBtnStyles = {
     fontSize: '1.3rem',
-    padding: '0.8rem 1rem',
-    backgroundColor: '#410FF8',
-    color: '#ffffff',
-    margin: '0rem 0.1rem 5rem',
+    padding: '0.6rem 1rem',
+    backgroundColor: '#08ee08',
+    color: '#333333',
     borderRadius: '0.5rem',
+    border: 'none',
+    outline: 'none',
+    marginLeft: '4rem'
 }
-const imgInfoStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '2rem'
+const inputStyle = {
+  position: 'relative',
+  width: '100%',
+  backgroundColor: '#f9f9f9',
+  border: 'none',
+  outline: 'none',
+  padding: '1.3rem 1rem 1.3rem',
+  borderRadius: '0.5rem',
+  color: 'gray',
+  fontWeight: '500',
+  fontSize: '1.3rem'
 }
 
 function Profile() {
@@ -60,7 +74,7 @@ if (profilePicData){
 
 // Upload selected image
 const uploadImage = () => {
-    const storageRef = ref(storage, "profile-images123")
+    const storageRef = ref(storage, "profile-pics/63d4ffaed5321072929763a9")
     uploadBytes(storageRef, imgDataRef.current)
     .then((snapShop) => {
       getDownloadURL(storageRef)
@@ -72,17 +86,29 @@ const uploadImage = () => {
     .catch((error) => console.log(error.message))
 }
 
+const userInfo = [['username', 'Adehenry'], ['name', 'Ade Henry'], ['email', 'adehenry@gmail.com'],[ 'phone', '+2348012345678']]
+
 
   return (
     <div style={pageStyles}>
-        <div className="profile-picture" style={ppDivStyles}>
-            <img src={profilePicURL ? `${profilePicURL}` : defaultProfilePic} alt="profile-picture" style={ppStyles}/>
+      <div className="info" style={infoStyle}>
+        <div className="left" style={{...infoChildStyle}}>
+          <label htmlFor="file-input">
+            <div className="profile-picture">
+              <img src={profilePicURL ? `${profilePicURL}` : defaultProfilePic} alt="profile-picture" style={ppStyles}/>
+            </div>
+          </label>
+          <input onChange={selectPicture} id="file-input" type="file" name="profile-picture"  accept='image/png image/PNG image/jpeg image/jpg image/webp' style={{display:"none"}}/>
+          <button onClick={uploadImage} style={uploadBtnStyles}>Upload</button>
         </div>
-        <div className="upload" style={{display: 'flex'}}>
-            <label htmlFor="file-input" style={selectPPBtnStyles}>Select profile picture</label>
-            <input onChange={selectPicture} id="file-input" type="file" name="profile-picture"  accept='image/png image/PNG image/jpeg image/jpg image/webp' style={{display:"none"}}/>
-            <div onClick={uploadImage} style={{...selectPPBtnStyles, backgroundColor: '#08ee08', color: '#333333'}}>Upload</div>
+        <div className="right" style={{...infoChildStyle, display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+          {userInfo.map((info) => 
+            (<div key={info[0]} className="field" style={{width:"100%", position:"relative"}}>
+            <input type="text" name='text' style={inputStyle}  value={`${info[0].toUpperCase()}: ${info[1]}`} contentEditable='false'/>
+          </div>)
+          )}
         </div>
+      </div>
     </div>
   )
 }

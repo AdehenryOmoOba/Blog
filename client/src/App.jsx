@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect,useContext} from 'react'
 import { Route,Routes } from 'react-router-dom'
 import axiosBase from './axios.js'
 import Header from './components/Header'
+import { blogsContext } from './context/BlogsContext.jsx'
 import Home from './pages/Home'
 import Latest from './pages/Latest'
 import Login from './pages/Login'
@@ -11,19 +12,20 @@ import SInglePost from './pages/SInglePost'
 
 
 function App() {
-  const [posts, setPosts] = useState([])
+  const [blogs, setBlogs] = useState([])
   const [error, setError] = useState("")
+  const {setContextBlogs} = useContext(blogsContext)
 
   useEffect(() => {
     axiosBase('/')
-    .then(({data, ...others}) => {
-      setPosts(data.posts)
-      console.log({others})
+    .then(({data}) => {
+      setContextBlogs(data.blogs)
+      const sortedBlogs = data.blogs.sort((a, b) => b.postedAt - a.postedAt)
+      setBlogs(sortedBlogs)
     })
     .catch((error) => setError(error.message))
   }, [])
 
-  if(posts.length) console.log(posts)
   if(error) console.log(error)
   
   return (
@@ -31,9 +33,9 @@ function App() {
      <Header />
      <main>
       <Routes>
-       <Route path='/' element={<Home />}/>
+       <Route path='/' element={<Home blogs={blogs}/>}/>
        <Route path='/latest' element={<Latest />}/>
-       <Route path='/posts/:id' element={<SInglePost />}/>
+       <Route path='/blogs/:id' element={<SInglePost />}/>
        <Route path='/login' element={<Login />}/>
        <Route path='/register' element={<Register />}/>
        <Route path='/profile' element={<Profile />}/>
