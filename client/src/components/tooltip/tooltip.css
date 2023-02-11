@@ -1,0 +1,66 @@
+.tooltip{
+    position: absolute;
+    right: -3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+}
+.content{
+    position: absolute;
+    width: max-content;
+    color: #410ff8;
+    background-color: #e6e0ff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: max-content;
+    padding: 1rem 2rem 1rem 3rem;
+    border-radius: 0.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease-in-out 0s;
+    
+}
+.content::after{
+    content: "";
+    position: absolute;
+    height: 2rem;
+    width: 2rem;
+    background-color: #e6e0ff;
+}
+.content ul li{
+    color: #3f3e3e;
+    font-weight: 500;
+}
+.icon{
+    height: 2rem;
+    width: 2rem;
+    color: #410ff8;
+    background-color: #e6e0ff;
+    border-radius: 3rem;
+    cursor: pointer;
+}
+.icon:hover ~ .content{
+    opacity: 1;
+    pointer-events: all;
+}
+.content.top{
+    right: -12rem;
+    top: -9.5rem;
+    z-index: 10;
+}
+.content.top::after{
+    left: 50%;
+    bottom: -1rem;
+    transform: translate(-50%) rotate(45deg);
+    z-index: 10;    
+}
+.content.left{
+    bottom: -2.7rem;
+    right: 4rem;
+}
+.content.left::after{
+    top: 50%;
+    right: -0.8rem;
+    transform: translateY(-50%) rotate(45deg);
+}

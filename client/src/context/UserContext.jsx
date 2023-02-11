@@ -5,19 +5,20 @@ import axiosBase from '../axios'
 export const userContext = createContext()
 
 function UserProvider({children}) {
-  const [username, setusername] = useState("")
+  const [userData, setuserData] = useState(null)
+
   useEffect(() => {
     axiosBase("/login")
     .then(({data}) => {
       if(data.user) {
-        setusername(data.user)
+        setuserData(data.user)
       }
     })
     .catch((error) => console.log(error.message))
-  })
+  }, [])
 
   return (
-    <userContext.Provider value={{currentUser: username, setusername}}>
+    <userContext.Provider value={{userData, setuserData}}>
         {children}
     </userContext.Provider>
   )

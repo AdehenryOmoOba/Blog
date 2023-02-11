@@ -6,6 +6,7 @@ const session = require('express-session')
 const mongoose = require('mongoose')
 const UserModel = require('./models/userModel')
 const BlogModel = require('./models/blogModel')
+const bcrypt = require('bcrypt')
 
 
 const corsOptions = {
@@ -17,7 +18,7 @@ app.use(session({secret: process.env.SESSION_SECRETE, resave: false, saveUniniti
 app.use(cors(corsOptions))
 app.use(express.json())
 
-const secreteInfo = {
+const userInfo = {
   channelName: 'codeNovella',
   developer: 'Adehenry'
 }
@@ -32,13 +33,22 @@ app.get('/blog-api', async (req, res) => {
   res.status(200).json({blogs})
 })
 
-app.post('/blog-api/login', (req, res) => {
+app.post('/blog-api/login', async (req, res) => {
+
+  console.log(req.body)
+
   const {username, password} = req.body
-  if(username === "adehenry" && password === "123") {
-    req.session.secreteInfo = secreteInfo
-    console.log("Logged In as: ",req.session.secreteInfo.developer)
-    res.status(200).json({user: req.session.secreteInfo.developer})
-    return
+  const user = await UserModel.findOne({username})
+
+  if(user) {
+    const isPwdMatch = await bcrypt.compare(password, user.password)
+    if (isPwdMatch){
+      const {_id, username,name,email,phone, profilePicURL} = user
+      req.session.userInfo = {_id, username,name,email, phone,profilePicURL}
+      console.log("Logged In as: ",req.session.userInfo.username)
+      res.status(200).json({user: req.session.userInfo})
+      return
+    }
   }
   console.log("Unauthorised")
   res.sendStatus(401)
@@ -46,9 +56,9 @@ app.post('/blog-api/login', (req, res) => {
 
 app.get('/blog-api/login', (req, res) => {
 
-  if(req.session.secreteInfo) {
-    console.log("Still logged in as : ",req.session.secreteInfo.developer)
-    res.status(200).json({user: req.session.secreteInfo.developer})
+  if(req.session.userInfo) {
+    console.log("Still logged in as : ",req.session.userInfo)
+    res.status(200).json({user: req.session.userInfo})
     return
   }
   console.log("Session Expired")
@@ -62,7 +72,8 @@ app.get('/blog-api/logout', (req, res) => {
 
 app.post('/blog-api/register', async (req, res) => {
   const  newUserObj = {...req.body}
-  const newUser = await new UserModel(newUserObj).save()
+  const hashedPassword = await bcrypt.hash(newUserObj.password, 10)
+  const newUser = await new UserModel({...newUserObj, password: hashedPassword}).save()
   res.status(200).json({status: 'success', newUser})
 
 })

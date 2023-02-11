@@ -1,0 +1,42 @@
+.validation-container{
+    overflow: hidden;
+    border-radius: 1rem;
+}
+.validation-container.close{
+   display: none;
+}
+.validation{
+    display: flex;
+    background-color: #e8f0f7;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1.5rem 2.5rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease-in-out 0s;
+    transform: translateY(-30rem);
+}
+.validation.info{
+    transform: translateY(0rem);
+}
+.validation ul{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.validation ul li{
+    position: relative;
+    list-style: none;
+    color: red;
+    font-size: 0.9rem;
+    transition: 0.2s ease-in-out 0s;
+    margin-left: 2rem;
+}
+[data-error-check]::before{
+    content: "❌";
+    position: absolute;
+    left: -1.7rem;
+    bottom: 0.03rem;
+}
+[data-error-check].passed::before{
+    content: "✔️";
+}

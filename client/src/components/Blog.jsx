@@ -2,6 +2,16 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 
+const authorImgStyles = {
+  height: "3.2rem",
+  width: "3.2rem",
+  borderRadius: "50%",
+  display: 'grid',
+  border: '0.3rem solid #f8eaea',
+  marginRight: '1rem'
+}
+
+
 function Blog({blog}) {
   const navigate = useNavigate()
 
@@ -32,7 +42,7 @@ function Blog({blog}) {
      </div>
      <div className="author">
        <div className="author-info">
-        <img src={blog?.authorInfo[0].profilePicURL} alt="author" />
+        <img style={authorImgStyles} src={blog?.authorInfo[0].profilePicURL} alt="author" />
         <p className="name">{blog?.authorInfo[0].name}</p>
        </div>
        <span>|</span>

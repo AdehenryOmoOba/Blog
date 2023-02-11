@@ -4,27 +4,26 @@ import {Link, useNavigate} from 'react-router-dom'
 import { themeContext } from '../context/ThemeContext'
 import { userContext } from '../context/UserContext'
 import axiosBase from '../axios'
-import author from '../assets/author.jpg'
+import placeHolderImg from '../assets/profile_pic_placeholder.png'
 
-const imgStyles = {
-  height: "3rem",
-  width: "3rem",
+const userImgStyles = {
+  height: "4.5rem",
+  width: "4.5rem",
   borderRadius: "50%",
-  marginRight: "1rem",
-  marginLeft: "2rem"
+  border: '0.3rem solid #f8eaea'
 }
 
 function Header() {
   const theme = useContext(themeContext)
-  const {currentUser,setusername} = useContext(userContext)
+  const {userData, setuserData} = useContext(userContext)
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    console.log(currentUser)
+    console.log(userData)
     console.log(theme)
     axiosBase('/logout')
     .then(() => {
-      setusername("")
+      setuserData("")
       navigate('/')
     })
     .catch((error) => console.log(error.message))
@@ -42,10 +41,12 @@ function Header() {
         <nav>
          <Link to='/'>Home</Link>
          <Link to='/latest'>Latest</Link>
-         {currentUser && <Link to='/profile'>Profile</Link>}
-         {currentUser ? <button onClick={handleLogout}>Logout</button> : <Link to='/login'>Login</Link>}
+         {userData?.username && <Link to='/profile'>Profile</Link>}
+         {userData?.username ? <button onClick={handleLogout}>Logout</button> : <Link to='/login'>Login</Link>}
         </nav>
-         {currentUser && <img src={author} alt='user-Image' style={imgStyles}></img>}
+         { userData?.username && 
+           <img src={userData.profilePicURL ? userData.profilePicURL : placeHolderImg} alt='user-Image' style={userImgStyles} />
+        }
       </div>
   </header>
   )

@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     phone: String,
     profilePicURL: String, 
-    createdAt: {type: Date, default: Date.now},
-    updatedAt: {type: Date}
+    createdAt: {type: String, default: Date.now},
+    updatedAt: {type: String}
 })
 
 const UserModel = mongoose.model('users', userSchema)

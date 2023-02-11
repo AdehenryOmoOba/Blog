@@ -1,6 +1,15 @@
-import React,{useState} from 'react'
+import './form.css'
+import React,{useRef, useState} from 'react'
 import { Link } from 'react-router-dom'
+import Tooltip from '../tooltip/tooltip'
+import {BsEye} from 'react-icons/bs'
+import { validatePassword } from '../../utils/validatePassword'
 
+
+const gridCenter = {
+  display: 'grid',
+  placeContent: 'center'
+}
 const container = {
     backgroundColor: "transparent",
     paddingBlock: '5rem',
@@ -19,6 +28,7 @@ const loginCardStyles = {
     flexDirection: "column", 
     padding: "4rem", 
     gap: "4rem", 
+    transition: 'height 0.5s ease 0s',
     boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px"
  }
  const inputStyle = {
@@ -27,7 +37,7 @@ const loginCardStyles = {
    backgroundColor: '#f9f9f9',
    border: 'none',
    outline: 'none',
-   padding: '2.5rem 1rem 0.75rem',
+   padding: '2.5rem 5rem 0.75rem 1rem',
    borderRadius: '0.5rem',
    color: '#333333',
    fontWeight: '500',
@@ -63,21 +73,54 @@ const loginCardStyles = {
    cursor: 'pointer',
    border: 'none'
  }
+ const eyeStyles = {
+  position: 'absolute',
+  right: '1rem',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  height: '1.2rem',
+  width: '1.2rem',
+  cursor: 'pointer'
+ }
+
+
 
 function Form({handleSubmit, emailField, confirmPwdField, title}) {
   const [userInfo, setUserInfo] = useState({})
+  const erroDivRef = useRef()
+
+  const altTitle = title === 'Login' ? 'register' : 'login'
 
   const updateField = (e) => {
     setUserInfo({...userInfo, [e.target.name]: e.target.value})
-   }
+  }
 
-   const altTitle = title === 'Login' ? 'register' : 'login'
+
+  const checkPassword = (e, userInfo) => {
+    e.preventDefault()
+    const listElements = erroDivRef.current.firstElementChild.firstElementChild.children
+    const response = validatePassword(userInfo.password, listElements)
+    if (response) return console.log('Password is good 👍')
+    erroDivRef.current.firstElementChild.classList.replace('close', 'info')
+    erroDivRef.current.classList.remove('close')
+    erroDivRef.current.firstElementChild.classList.add('info')
+  }
+
+  const removeErrorDiv = () => {
+    erroDivRef.current.firstElementChild.classList.replace('info', 'close')
+    erroDivRef.current.classList.add('close')
+  }
+
+  const revealPassword = (e) => {
+    const input = e.target.parentNode.firstChild
+    input.getAttribute('type') === 'password' ? input.setAttribute('type', 'text') : input.setAttribute('type', 'password')
+  }
 
   return (
     <div style={container}>
     <div style={loginCardStyles}>
       <h2 style={{fontSize: "2em"}}>{title}</h2>
-      <form onSubmit={(e) => handleSubmit(e, userInfo)} style={{width:"100%", display:"flex", flexDirection:"column", gap:'2.5rem'}}>
+      <form onSubmit={(e) => checkPassword(e, userInfo)} style={{width:"100%", display:"flex", flexDirection:"column", gap:'2.5rem'}}>
         <div style={{width:"100%", position:"relative"}}>
           <input type="text" name='username' style={inputStyle} required value={userInfo.username || ""} onChange={updateField} />
           <i style={labelStyle}>Username</i>
@@ -87,9 +130,24 @@ function Form({handleSubmit, emailField, confirmPwdField, title}) {
           <i style={labelStyle}>Email</i>
         </div>}
         <div style={{width:"100%", position:"relative"}}>
-          <input type="password" name='password' style={inputStyle} required value={userInfo.password || ""}  onChange={updateField} />
+          <input type="password" name='password' style={inputStyle} required value={userInfo.password || ""} onFocus={removeErrorDiv} onChange={updateField} />
           <i style={labelStyle}>Password</i>
+          <BsEye style={eyeStyles} onClick={revealPassword}/>
+          {confirmPwdField && <Tooltip />} 
         </div>
+        {confirmPwdField && 
+          <div ref={erroDivRef} className="validation-container">
+           <div className="validation close">
+               <ul>
+                   <li data-error-check="isUpperCase">At least one uppercase character</li>
+                   <li data-error-check="isLowerCase">At least one lowercase character</li>
+                   <li data-error-check="isNumber">At least one digit (0-9)</li>
+                   <li data-error-check="isSpecialXter">At least one special character (! @ # $ % ^ & *)</li>
+                   <li data-error-check="isLength">At least 5 character length</li>
+                 </ul>
+           </div>
+          </div>
+        }
         {confirmPwdField && <div style={{width:"100%", position:"relative"}}>
           <input type="password" name='confirmPassword' style={inputStyle} required value={userInfo.confirmPassword || ""}  onChange={updateField} />
           <i style={labelStyle}>Confirm Password</i>
