@@ -6,12 +6,15 @@ import {BrowserRouter} from 'react-router-dom'
 import ThemeProvider from './context/ThemeContext'
 import UserProvider from './context/UserContext'
 import BlogsContextProvider from './context/BlogsContext'
+import NotificationContextProvider from './context/NotificationContext'
+
 
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
+    <NotificationContextProvider>
      <BlogsContextProvider>
       <ThemeProvider>
        <UserProvider>
@@ -19,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
        </UserProvider>
       </ThemeProvider>
      </BlogsContextProvider>
+     </NotificationContextProvider>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

@@ -1,15 +1,11 @@
 import './form.css'
-import React,{useRef, useState} from 'react'
+import React,{useRef, useState,useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import Tooltip from '../tooltip/tooltip'
 import {BsEye} from 'react-icons/bs'
 import { validatePassword } from '../../utils/validatePassword'
 
 
-const gridCenter = {
-  display: 'grid',
-  placeContent: 'center'
-}
 const container = {
     backgroundColor: "transparent",
     paddingBlock: '5rem',
@@ -84,31 +80,32 @@ const loginCardStyles = {
  }
 
 
-
 function Form({handleSubmit, emailField, confirmPwdField, title}) {
   const [userInfo, setUserInfo] = useState({})
   const erroDivRef = useRef()
-
+  useEffect(() => {
+    erroDivRef?.current?.classList.add('close')
+  }, [])
+  
   const altTitle = title === 'Login' ? 'register' : 'login'
 
   const updateField = (e) => {
     setUserInfo({...userInfo, [e.target.name]: e.target.value})
   }
 
-
   const checkPassword = (e, userInfo) => {
     e.preventDefault()
-    const listElements = erroDivRef.current.firstElementChild.firstElementChild.children
+    const listElements = erroDivRef?.current.firstElementChild.firstElementChild.children
     const response = validatePassword(userInfo.password, listElements)
     if (response) return console.log('Password is good 👍')
-    erroDivRef.current.firstElementChild.classList.replace('close', 'info')
-    erroDivRef.current.classList.remove('close')
-    erroDivRef.current.firstElementChild.classList.add('info')
+    erroDivRef?.current.firstElementChild.classList.replace('close', 'info')
+    erroDivRef?.current.classList.remove('close')
+    erroDivRef?.current.firstElementChild.classList.add('info')
   }
 
   const removeErrorDiv = () => {
-    erroDivRef.current.firstElementChild.classList.replace('info', 'close')
-    erroDivRef.current.classList.add('close')
+    erroDivRef?.current?.firstElementChild.classList.replace('info', 'close')
+    erroDivRef?.current?.classList.add('close')
   }
 
   const revealPassword = (e) => {
@@ -120,7 +117,7 @@ function Form({handleSubmit, emailField, confirmPwdField, title}) {
     <div style={container}>
     <div style={loginCardStyles}>
       <h2 style={{fontSize: "2em"}}>{title}</h2>
-      <form onSubmit={(e) => checkPassword(e, userInfo)} style={{width:"100%", display:"flex", flexDirection:"column", gap:'2.5rem'}}>
+      <form onSubmit={confirmPwdField ? (e) => checkPassword(e, userInfo) : (e) => handleSubmit(e, userInfo)} style={{width:"100%", display:"flex", flexDirection:"column", gap:'2.5rem'}}>
         <div style={{width:"100%", position:"relative"}}>
           <input type="text" name='username' style={inputStyle} required value={userInfo.username || ""} onChange={updateField} />
           <i style={labelStyle}>Username</i>

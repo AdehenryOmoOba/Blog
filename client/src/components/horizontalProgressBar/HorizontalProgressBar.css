@@ -1,0 +1,48 @@
+.upload{
+    position: absolute;
+    height: 5rem;
+    width: 40%;
+    border-radius: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 1rem;
+    margin-bottom: 5rem;
+    z-index: 20;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    visibility: hidden;
+}
+.upload.active{
+    visibility: visible;
+}
+.upload-text{
+    display: flex;
+    position: absolute;
+    width: 90%;
+    left: 50%;
+    justify-content: space-between;
+    transform: translateX(-50%);
+}
+.upload-text p{
+    color: aqua;
+    font-size: 1rem;
+}
+.progress-bar{
+ position: absolute;
+ height: 0.5rem;
+ width: 90%;
+ background-color: #131313;
+ border-radius: 4rem;
+ overflow: hidden;
+ top: 55%;
+ left: 50%;
+ transform: translate(-50%,-55%);
+}
+.progress-bar span{
+ position: absolute;
+ height: 100%;
+ inset: 0;
+ border-radius: 4rem;
+ background-image:  repeating-linear-gradient(135deg, #a2e0e0, #a2e0e0 0.3rem, #949292 0.3rem, #949292 0.6rem);
+ transition: width 30 ease 0s;
+}

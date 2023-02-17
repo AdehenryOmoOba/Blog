@@ -1,23 +1,86 @@
 .toast{
     position: absolute;
-    display: flex;
-    top: 10rem;
-    right: 1rem;
-    height: 9rem;
-    min-width: 35rem;
-    /* theme color  */
-    background-color: #ffffff;
+    top: 0;
+    right: 0;
+    height: 8rem;
+    min-width: 28rem;
     border-radius: 0.5rem;
     overflow-x: hidden;
-    transform: translateX(calc(100% + 1rem));
+    transform: translateX(150%);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+    z-index: 100;
+}
+.toast.error{
+    background-color: #fff8f8;
+}
+.toast.success{
+    background-color: #edf9ed;
+}
+.toast-container::before{
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 0.3rem;
+    left: 0;
+    z-index: 200;
+}
+.toast-container.success::before{
+    background-color: green;
+}
+.toast-container.error::before{
+    background-color: red;
 }
 .toast.active{
     transform: translateX(0%);
 }
-.toast.active.error{
-    background-color: #efbbbb;
+.toast-container{
+    position: relative;
+    display: flex;
+    min-width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    align-items: center;
+    padding-left: 2rem;
+}
+.status-icon{
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    font-size: 1.8rem;
+    margin-right: 3rem;
+}
+.toast-title-msg {
+    height: 75%;
+}
+.status-icon.success{
+    background-color: #a9e3a9;
+    color: green;
+}
+.status-icon.error{
+    background-color: #f6a1a1;
+    color: red;
+}
+.toast-title-msg h4{
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: rgb(0, 84, 0);
+    text-transform: capitalize;
+}
+.close-icon{
+    cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    height: 1.7rem;
+    width: 1.7rem;
+    display: grid;
+    place-content: center;
+    border-radius: 50%;
+    background-color: #f0ecec;
+    font-size: 1.3rem;
 }
 .progress{
     position: absolute;
@@ -25,8 +88,7 @@
     right: 0%;
     min-width: 100%;
     height: 0.3rem;
-    /* theme color  */
-    background-color: #ffffff;
+    /* background-color: #ffffff; */
 }
 .progress::after{
     position: absolute;
@@ -35,11 +97,16 @@
     right: 0%;
     min-width: 100%;
     height: 0.3rem;
-    /* theme color  */
-    background-color: #4070f4;
+    
+}
+.progress.success::after{
+  background-color: green;
+}
+.progress.error::after{
+  background-color: red;
 }
 .progress.active::after{
-    animation: progress 5s linear forwards;  
+    animation: progress 3s linear forwards;  
 }
 .progress.active.error::after{
     background-color: #ff0000;
@@ -49,84 +116,4 @@
         right: 100%;
     }
 }
-.status-icon{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 15%;
-    height: 100%;
-    border-radius: 0.5rem 0 0 0.5rem;
-    /* theme color  */
-    border-left: 0.3rem solid #4070f4;
-}
-.status-icon.error{
-    border-left: 0.3rem solid #ff0000;
-}
-.status-icon .icon{
-    height: 3rem;
-    width: 3rem;
-    background-color: #4070f4;
-    border-radius: 50%;
-    display: grid;
-    place-content: center;
-}
-.status-icon .icon.error{
-    background-color: #f93434;
-}
-.content{
-    min-width: 75%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-inline: 1rem;
-}
-.content h4{
-    font-family: 'Nunito', sans-serif;
-    font-weight: bold;
-    font-size: 1.8rem;
-    margin-bottom: 0.1rem;
-    /* theme color  */
-    color: #107d10;
-}
-.content h4.error{
-    color: #f93434;
-}
-.content p{
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.5rem;
-    /* theme color  */
-    color: #4070f4;
-    margin: 0;
-}
-.content p.error{
-    color: #430c0c;
-}
-.close{
-    min-width: 10%;
-    height: 100%;
-    border-radius: 0 0.5rem 0.5rem 0;
-    position: relative;
-}
-.fa-xmark{
-    /* theme color  */
-    color: #ffffff;
-    font-size: 1.2rem;
-}
-.close-icon-bg{
-    cursor: pointer;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    height: 1.7rem;
-    width: 1.7rem;
-    background-color: #1e1c1c;
-    display: grid;
-    place-content: center;
-    border-radius: 50%;
-}
-.fa-check{
-    /* theme color  */
-    color: #ffffff;
-    font-size: 1.6rem;
-}
+

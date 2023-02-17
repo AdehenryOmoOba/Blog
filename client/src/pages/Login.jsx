@@ -4,10 +4,12 @@ import axiosBase from '../axios'
 import Form from '../components/form/Form'
 import { userContext,  } from '../context/UserContext'
 import Spinner from '../components/Spinner/Spinner'
+import { notificationContext } from '../context/NotificationContext'
 
 
 function Login() {
   const {setuserData} = useContext(userContext)
+  const {notify} = useContext(notificationContext)
   const [spinner, setSpinner] = useState(false)
   const navigate = useNavigate()
   
@@ -20,12 +22,14 @@ function Login() {
         console.log(data.user)
         setSpinner(false)
         setuserData(data.user)
+        notify({active: true, message: "Login successful", state: 'success'})
         navigate('/')
       }
     })
     .catch((error) => {
       setSpinner(false)
-       console.log(error.message)
+       const errorMessage = error.response?.data.message || "Something went wrong"
+       notify({active: true, message: errorMessage, state: 'error'})
       })
   }
   

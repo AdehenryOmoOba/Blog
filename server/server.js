@@ -18,11 +18,6 @@ app.use(session({secret: process.env.SESSION_SECRETE, resave: false, saveUniniti
 app.use(cors(corsOptions))
 app.use(express.json())
 
-const userInfo = {
-  channelName: 'codeNovella',
-  developer: 'Adehenry'
-}
-
 app.get('/blog-api', async (req, res) => {
 
   let blogs = await BlogModel.aggregate([
@@ -51,7 +46,7 @@ app.post('/blog-api/login', async (req, res) => {
     }
   }
   console.log("Unauthorised")
-  res.sendStatus(401)
+  return  res.status(401).json({message: "Incorrect Password"})
 })
 
 app.get('/blog-api/login', (req, res) => {

@@ -1,6 +1,7 @@
+import "../components/horizontalProgressBar/HorizontalProgressBar.css"
 import React,{useState,useRef,useContext} from 'react'
 import defaultProfilePic from '../assets/profile_pic_placeholder.png'
-import {ref, uploadBytes, getDownloadURL} from "firebase/storage"
+import {ref, getDownloadURL, uploadBytesResumable} from "firebase/storage"
 import { storage } from '../firebase/storageConfig'
 import { userContext } from '../context/UserContext'
 import axiosBase from '../axios'
@@ -24,6 +25,7 @@ const pageStyles = {
     paddingBlock: '2rem'
 }
 const infoStyle = {
+  position: 'relative',
   minHeight: '25rem',
   width: '100%',
   display: 'flex',
@@ -138,6 +140,15 @@ const fieldValueStyles = {
   cursor: 'pointer',
   justifyContent: 'space-between',
 }
+const editableFieldStyle = {
+  fontSize: '1.2rem ',
+  width: '20rem',
+  height: '3rem',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '1rem',
+  overflow: 'hidden'
+}
 
 function Profile() {
   const [profilePicData, setProfilePicData] = useState(null)
@@ -146,6 +157,8 @@ function Profile() {
   const [searchOption, setsearchOption] = useState('tag')
   const imgDataRef = useRef()
   const searchRef = useRef()
+  const uploadRef = useRef()
+  const beforeEditRef = useRef()
 
   const selectPicture = (e) => {
     const imgData = e.target.files[0]
@@ -161,38 +174,65 @@ function Profile() {
   const handleSearch = () => {
     console.log(`Search by ${searchOption}: ${searchRef.current.value}`)
   }
+
+  const editField = (e) => {
+   beforeEditRef.current = e.currentTarget.parentElement.firstElementChild.textContent
+   e.currentTarget.parentElement.firstElementChild.setAttribute('contenteditable', 'true')
+   e.currentTarget.parentElement.firstElementChild.focus()
+  }
+
+  const abortEdit = (e) => {
+    e.target.textContent = beforeEditRef.current || e.target.textContent
+    e.target.setAttribute('contenteditable', 'false')
+  }
+
+  // Preview selected image
+  if (profilePicData){
+      const imgPreview = URL.createObjectURL(profilePicData)
+      imgDataRef.current = profilePicData
+      setProfilePicData(null)
+      setProfilePicURL(imgPreview)
+    }
+  // Upload selected image
+  const uploadImage = () => {
   
+    uploadRef.current.classList.add('active')
 
-// Preview selected image
-if (profilePicData){
-    const imgPreview = URL.createObjectURL(profilePicData)
-    imgDataRef.current = profilePicData
-    setProfilePicData(null)
-    setProfilePicURL(imgPreview)
-}
-
-const currentImgSrc = profilePicURL ? profilePicURL : userData?.profilePicURL ? userData?.profilePicURL : defaultProfilePic
-
-// Upload selected image
-const uploadImage = () => {
     const storageRef = ref(storage, `profile-pics/${userData._id}`)
-    uploadBytes(storageRef, imgDataRef.current)
-    .then((snapShop) => {
-      getDownloadURL(storageRef)
-      .then((url) => {
-        axiosBase.put('/update-user', {userId: userData._id, profilePicURL: url})
-        .then(({data}) => {
-          setProfilePicURL("")
-          setuserData(data.updatedUser)
-        })
-        .catch((error) => console.log(error.message))
-      })
-      .catch((error) => console.log(error.message))
-    })
-    .catch((error) => console.log(error.message))
-}
 
-const userInfo = [['Username', userData?.username || 'n/a'], ['Name', userData?.name || 'n/a'], ['Email', userData?.email || 'n/a'],[ 'Phone', userData?.phone || 'n/a']]
+    const uploadTask = uploadBytesResumable(storageRef, imgDataRef.current)
+
+    uploadTask.on('state_changed', 
+
+    (snapshot) => {
+
+     let progress = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+     
+     uploadRef.current.lastElementChild.firstElementChild.style.width = `${progress || 30}%`
+
+     uploadRef.current.firstElementChild.lastElementChild.firstElementChild.textContent = `${progress || 30}%`
+    }, 
+    (error) => {
+     console.log(error.message)
+    }, 
+    () => {
+     setTimeout(() => { uploadRef.current.classList.remove('active')}, 1000)
+     getDownloadURL(storageRef)
+     .then((url) => {
+       axiosBase.put('/update-user', {userId: userData._id, profilePicURL: url})
+       .then(({data}) => {
+         setProfilePicURL("")
+         setuserData(data.updatedUser)
+       })
+       .catch((error) => console.log(error.message))
+     })
+     .catch((error) => console.log(error.message))
+    })
+  }
+  
+  const currentImgSrc = profilePicURL ? profilePicURL : userData?.profilePicURL ? userData?.profilePicURL : defaultProfilePic
+
+  const userInfo = [['Username', userData?.username || 'n/a'], ['Name', userData?.name || 'n/a'], ['Email', userData?.email || 'n/a'],[ 'Phone', userData?.phone || 'n/a']]
 
   return (
     <div style={pageStyles}>
@@ -200,9 +240,22 @@ const userInfo = [['Username', userData?.username || 'n/a'], ['Name', userData?.
         <div style={{marginBottom: '2rem'}}>
           <h3 style={titleStyle}>Info</h3>
         </div>
+
+        <div ref={uploadRef} className="upload">
+            <div className="upload-text">
+                <p>Uploading image...</p>
+                <div className="percentage">
+                    <p>0%</p>
+                </div>
+            </div>
+            <div className="progress-bar">
+                <span></span> 
+            </div>
+        </div>
+
         <div style={{display: 'flex'}}>
           <div className="left" style={{...infoChildStyle}}>
-            <label htmlFor="file-input">
+            <label style={{width: 'max-content',display: 'inline-block'}} htmlFor="file-input">
               <div className="profile-picture">
                 <img src={currentImgSrc} alt="profile-picture" style={ppStyles}/>
               </div>
@@ -217,14 +270,14 @@ const userInfo = [['Username', userData?.username || 'n/a'], ['Name', userData?.
             { userInfo.map((info) => 
               (<div key={info[0]} style={{display: 'flex'}}>
                 <div className="field" style={fieldStyles}>
-                 <h3 className='field-name' style={{...titleStyle, marginRight: '1rem', fontSize: '1.2rem'}}>{info[0]}</h3>
+                  <h3 className='field-name' style={{...titleStyle, marginRight: '1rem', fontSize: '1.2rem'}}>{info[0]}</h3>
                 </div>
                 <div className="field-value" style={fieldValueStyles}>
-                 <div className="field-value-first" style={{fontSize: '1.2rem '}}>{info[1]}</div>
-                 <div className='editBtn'>
-                  <MdOutlineEditNote />
-                 </div>
-                </div>
+                  <div className="field-value-first" spellCheck={false} style={editableFieldStyle} onBlur={abortEdit}>{info[1]}</div>
+                  <div className='editBtn' onClick={editField}>
+                    <MdOutlineEditNote />
+                  </div>
+               </div>
               </div>)
               )}
           </div>
@@ -261,7 +314,6 @@ const userInfo = [['Username', userData?.username || 'n/a'], ['Name', userData?.
         <div style={{marginBottom: '2rem'}}>
           <h3 style={titleStyle}>Your Blogs</h3>
         </div>
-
       </div>
     </div>
   )

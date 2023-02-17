@@ -27,6 +27,9 @@ function debounceDetectEdgeTouch(fn, ref) {
   timeoutID = setTimeout(() => {
     fn(ref)
   }, 1000);
+  return () => {
+   window.removeEventListener('resize', debounceDetectEdgeTouch(detectEdgeTouch, ref))
+  }
  }
 }
 
